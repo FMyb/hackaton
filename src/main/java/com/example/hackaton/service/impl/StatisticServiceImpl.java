@@ -8,7 +8,9 @@ import com.example.hackaton.repository.ArchiveStateRepository;
 import com.example.hackaton.service.StatisticService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author Yaroslav Ilin
@@ -24,10 +26,32 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<TimeStatistic> getTimeStatistics(long tsBefore, long tsAfter, String type, Integer limit) {
+    public List<TimeStatistic> getTimeStatistics(long tsBefore, long tsAfter, Function<ArchiveState, Double> avg, Integer limit) {
         List<ArchiveState> archiveStatesBefore = archiveStateRepository.findAllByTimestamp(tsBefore);
-        List<ArchiveState> archiveStatesAfter = archiveStateRepository.findAllByTimestamp(tsAfter);
-        return null;
+        Map<UUID, ArchiveState> archiveStatesAfter = archiveStateRepository.findAllByTimestamp(tsAfter).stream()
+                .collect(Collectors.toMap(x -> x.getMethod().getMethodId(), x -> x));
+        List<TimeStatistic> result = new ArrayList<>();
+        for (var before : archiveStatesBefore) {
+            ArchiveState after = archiveStatesAfter.get(before.getMethod().getMethodId());
+            if (after == null) {
+                continue;
+            }
+            double avgBefore = avg.apply(before);
+            if (Math.abs(avgBefore) < 0.0000001) {
+                continue;
+            }
+            double avgAfter = avg.apply(after);
+            TimeStatistic timeStatistic = new TimeStatistic(
+                    before.getMethod().getName(),
+                    before.getMethod().getMethodId(),
+                    avgBefore,
+                    avgAfter,
+                    avgAfter / avgBefore
+            );
+            result.add(timeStatistic);
+        }
+        result.sort((x, y) -> y.getPercent().compareTo(x.getPercent()));
+        return result;
     }
 
     @Override
