@@ -17,4 +17,6 @@ public interface StatisticService {
     List<Point> getDependencyData(long id, String type, long tsBefore, long tsAfter);
 
     List<EventDto> getStac(long id, String type, long tsBefore, long tsAfter);
+
+    boolean archiveData(long tsBefore, long tsAfter);
 }
