@@ -26,10 +26,10 @@ public class ArchiveState {
     private Method method;
 
     @Column(name = "avg_byte_count")
-    private long avgByteCount;
+    private double avgByteCount;
 
     @Column(name = "avg_time")
-    private long avgTime;
+    private double avgTime;
 
     @Column(name = "timestamp")
     private long timestamp;

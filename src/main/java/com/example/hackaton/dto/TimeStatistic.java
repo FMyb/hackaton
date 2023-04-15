@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class TimeStatistic {
-
 	private final String methodName;
+
 	private final Integer methodId;
 
 	private final Double avgBefore;

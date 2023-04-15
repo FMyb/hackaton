@@ -9,8 +9,8 @@ create table if not exists archive_states
 (
     archive_state_id uuid not null primary key,
     method_id        uuid not null references methods (method_id),
-    avg_byte_count   bigint,
-    avg_time         bigint,
+    avg_byte_count   double,
+    avg_time         double,
     timestamp        bigint,
     unique (method_id, timestamp)
 );
