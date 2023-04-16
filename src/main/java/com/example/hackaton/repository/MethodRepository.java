@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MethodRepository extends JpaRepository<Method, Long> {
+	Method findMethodByFullName(String fullName);
 }

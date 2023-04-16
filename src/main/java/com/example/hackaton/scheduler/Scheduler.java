@@ -1,14 +1,11 @@
-package com.example.hackaton;
+package com.example.hackaton.scheduler;
 
-import com.example.hackaton.service.ArchiveService;
-import lombok.AllArgsConstructor;
+import com.example.hackaton.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -16,11 +13,12 @@ import java.util.concurrent.TimeUnit;
 public class Scheduler {
 	private final ScheduledThreadPoolExecutor executor;
 
-	@Autowired
-	private ArchiveService archiveService;
+	private StatisticService archiveService;
 	private final long updateDelaySeconds = 900;
 
-	public Scheduler() {
+	@Autowired
+	public Scheduler(StatisticService archiveService) {
+		this.archiveService = archiveService;
 		executor = new ScheduledThreadPoolExecutor(1);
 		executor.scheduleAtFixedRate(
 				this::run,
@@ -32,9 +30,11 @@ public class Scheduler {
 
 
 	private void run() {
+		long now = LocalDateTime.now().atZone(ZoneId.of("Europe/Moscow")).toInstant().toEpochMilli();
+		now = now - now % (900000);
 		archiveService.archiveData(
-				LocalDateTime.now().atZone(ZoneId.of("Europe/Moscow")).toEpochSecond() - updateDelaySeconds,
-				LocalDateTime.now().atZone(ZoneId.of("Europe/Moscow")).toInstant().toEpochMilli()
+				now - updateDelaySeconds * 1000,
+				now
 				);
 	}
 }
