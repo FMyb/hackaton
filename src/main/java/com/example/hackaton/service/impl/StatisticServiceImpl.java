@@ -77,7 +77,18 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter) {
-        return null;
+        return eventStateRepository.getEventsByMethodId(id, tsBefore, tsAfter).stream()
+                .map(it -> EventDto.builder()
+                        .eventId(it.getEventId())
+                        .methodId(it.getMethod().getMethodId())
+                        .fullName(it.getMethod().getFullName())
+                        .name(it.getMethod().getName())
+                        .startTimestamp(it.getStartTimestamp())
+                        .finishTimestamp(it.getFinishTimestamp())
+                        .bytesCount(it.getBytesCount())
+                        .stacktrace(it.getStacktrace())
+                        .build()
+                ).collect(Collectors.toList());
     }
 
     @Override
