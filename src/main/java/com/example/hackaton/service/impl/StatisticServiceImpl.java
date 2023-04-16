@@ -76,13 +76,14 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public void saveStats(EventInput input) {
-        Method method = methodRepository.findMethodByFullName(input.getFullMethodName());
-        if (method == null) {
-            method = new Method(UUID.randomUUID(), input.getFullMethodName(), input.getMethodName());
-            methodRepository.save(method);
+    public void saveStats(List<EventInput> inputs) {
+        for (EventInput input : inputs) {
+            Method method = methodRepository.findMethodByFullName(input.getFullMethodName());
+            if (method == null) {
+                methodRepository.save(new Method(UUID.randomUUID(), input.getFullMethodName(), input.getMethodName()));
+            }
+            eventStateRepository.save(new Event(UUID.randomUUID(), method, input.getStartTimestamp(), input.getFinishTimestamp(), input.getBytesCount(), input.getStacktrace()));
         }
-        eventStateRepository.save(new Event(UUID.randomUUID(), method, input.getStartTimestamp(), input.getFinishTimestamp(), input.getBytesCount(), input.getStacktrace()));
     }
 
     @Override

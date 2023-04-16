@@ -19,7 +19,7 @@ public interface StatisticService {
 
     List<EventDto> getStac(long id, String type, long tsBefore, long tsAfter);
 
-    void saveStats(EventInput input);
+    void saveStats(List<EventInput> input);
 
     void archiveData(long tsBefore, long tsAfter);
 

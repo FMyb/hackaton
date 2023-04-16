@@ -14,6 +14,6 @@ import java.util.UUID;
  */
 @Repository
 public interface ArchiveStateRepository extends JpaRepository<ArchiveState, UUID> {
-    @Query("from archive_state where timestamp = (select timestamp from archive_state where timestamp > :timestamp order by timestamp limit 1)")
+    @Query("from archive_state where timestamp = (select timestamp from archive_state where timestamp >= :timestamp order by timestamp limit 1)")
     List<ArchiveState> findAllByTimestamp(@Param("timestamp") long timestamp);
 }

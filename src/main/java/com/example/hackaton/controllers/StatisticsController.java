@@ -7,6 +7,7 @@ import com.example.hackaton.dto.TimeStatistic;
 import com.example.hackaton.model.ArchiveState;
 import com.example.hackaton.service.StatisticService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 
 @RestController
 @RequestMapping
+@CrossOrigin("http://localhost:3000")
 public class StatisticsController {
     private final StatisticService statisticService;
 
@@ -38,8 +40,8 @@ public class StatisticsController {
             @RequestParam Integer limit
     ) {
         Function<ArchiveState, Double> typeMapper = switch (type) {
-            case "byte_count" -> ArchiveState::getAvgByteCount;
-            case "time" -> ArchiveState::getAvgTime;
+            case "BYTE_CNT" -> ArchiveState::getAvgByteCount;
+            case "EXEC_TIME" -> ArchiveState::getAvgTime;
             default -> null;
         };
         if (typeMapper == null) {
