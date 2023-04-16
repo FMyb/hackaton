@@ -12,6 +12,7 @@ import com.example.hackaton.repository.EventRepository;
 import com.example.hackaton.repository.MethodRepository;
 import com.example.hackaton.service.StatisticService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -58,7 +59,7 @@ public class StatisticServiceImpl implements StatisticService {
                     before.getMethod().getMethodId(),
                     avgBefore,
                     avgAfter,
-                    avgAfter / avgBefore
+                    avgAfter / avgBefore * 100 - 100
             );
             result.add(timeStatistic);
         }
@@ -76,8 +77,8 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter) {
-        return eventStateRepository.getEventsByMethodId(id, tsBefore, tsAfter).stream()
+    public List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter, int limit) {
+        return eventStateRepository.getEventsByMethodId(id, tsBefore, tsAfter, PageRequest.of(0, limit)).stream()
                 .map(it -> EventDto.builder()
                         .eventId(it.getEventId())
                         .methodId(it.getMethod().getMethodId())
@@ -96,12 +97,13 @@ public class StatisticServiceImpl implements StatisticService {
     public void saveStats(List<EventInput> inputs) {
         for (EventInput input : inputs) {
             Method method = methodRepository.findMethodByFullName(input.getFullMethodName());
+
             if (method == null) {
-                method = methodRepository.save(Method.builder()
+                method = Method.builder()
                         .fullName(input.getFullMethodName())
                         .name(input.getMethodName())
-                        .build()
-                );
+                        .build();
+                methodRepository.save(method);
             }
             eventStateRepository.save(Event.builder()
                     .method(method)

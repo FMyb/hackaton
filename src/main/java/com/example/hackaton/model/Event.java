@@ -13,9 +13,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@SequenceGenerator(allocationSize = 1, name = "id_seq", sequenceName = "id_seq")
 public class Event {
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "id_seq")
     private long eventId;
 
     @ManyToOne

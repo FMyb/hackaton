@@ -1,6 +1,7 @@
 package com.example.hackaton.repository;
 
 import com.example.hackaton.model.Event;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +19,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> getStatesForArchive(@Param("tsBefore") long tsBefore, @Param("tsAfter") long tsAfter);
 
     @Query("from event e where e.finishTimestamp >= :tsBefore and e.finishTimestamp <= :tsAfter and e.method.methodId = :methodId order by e.startTimestamp")
-    List<Event> getEventsByMethodId(@Param("methodId") long methodId, @Param("tsBefore") long tsBefore, @Param("tsAfter") long tsAfter);
+    List<Event> getEventsByMethodId(@Param("methodId") long methodId, @Param("tsBefore") long tsBefore, @Param("tsAfter") long tsAfter, Pageable pageable);
 }

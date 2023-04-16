@@ -77,8 +77,9 @@ public class StatisticsController {
             @PathVariable("id") long id,
             @RequestParam String type,
             @RequestParam long tsBefore,
-            @RequestParam long tsAfter
-    ) {
+            @RequestParam long tsAfter,
+            @RequestParam int limit
+            ) {
         Function<ArchiveState, Double> typeMapper = switch (type) {
             case "BYTE_CNT" -> ArchiveState::getAvgByteCount;
             case "EXEC_TIME" -> ArchiveState::getAvgTime;
@@ -87,7 +88,7 @@ public class StatisticsController {
         if (typeMapper == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "bad type");
         }
-        return statisticService.getStac(id, typeMapper, tsBefore, tsAfter);
+        return statisticService.getStac(id, typeMapper, tsBefore, tsAfter, limit);
     }
 
 

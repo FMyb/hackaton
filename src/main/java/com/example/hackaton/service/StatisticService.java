@@ -17,7 +17,7 @@ public interface StatisticService {
 
     List<Point> getDependencyData(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter);
 
-    List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter);
+    List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter, int limit);
 
     void saveStats(List<EventInput> input);
 

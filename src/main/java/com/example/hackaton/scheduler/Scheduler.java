@@ -31,10 +31,10 @@ public class Scheduler {
 
 	private void run() {
 		long now = LocalDateTime.now().atZone(ZoneId.of("Europe/Moscow")).toInstant().toEpochMilli();
-		now = now - now % (900000);
+		now = now - now % (updateDelaySeconds * 1000);
 		archiveService.archiveData(
-				now - updateDelaySeconds * 1000,
-				now
+				now,
+				now + updateDelaySeconds * 1000
 				);
 	}
 }

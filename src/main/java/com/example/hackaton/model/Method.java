@@ -14,10 +14,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@SequenceGenerator(allocationSize = 1, name = "id_seq", sequenceName = "id_seq")
 public class Method {
     @Id
-    @GeneratedValue
-    private long methodId;
+    @GeneratedValue(generator = "id_seq")
+    private Long methodId;
 
     @Column(name = "full_name")
     private String fullName;

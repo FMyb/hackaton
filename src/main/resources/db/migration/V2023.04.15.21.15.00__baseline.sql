@@ -5,6 +5,8 @@ create table if not exists methods
     name      varchar(127) not null
 );
 
+CREATE SEQUENCE if not exists id_seq INCREMENT 5 START 100;
+
 create table if not exists archive_states
 (
     archive_state_id bigint not null primary key,
