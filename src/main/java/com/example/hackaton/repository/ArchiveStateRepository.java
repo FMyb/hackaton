@@ -7,13 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Yaroslav Ilin
  */
 @Repository
-public interface ArchiveStateRepository extends JpaRepository<ArchiveState, UUID> {
+public interface ArchiveStateRepository extends JpaRepository<ArchiveState, Long> {
     @Query("from archive_state where timestamp = (select timestamp from archive_state where timestamp >= :timestamp order by timestamp limit 1)")
     List<ArchiveState> findAllByTimestamp(@Param("timestamp") long timestamp);
+
+    List<ArchiveState> findAllByMethod_MethodIdAndTimestampGreaterThanEqualAndTimestampLessThanEqualOrderByTimestamp(long methodId, long tsBefore, long tsAfter);
 }

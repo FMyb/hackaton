@@ -1,12 +1,7 @@
 package com.example.hackaton.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.UUID;
+import lombok.*;
 
 /**
  * @author Yaroslav Ilin
@@ -17,9 +12,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ArchiveState {
     @Id
-    private UUID archiveStateId;
+    @GeneratedValue
+    private long archiveStateId;
 
     @ManyToOne
     @JoinColumn(name = "method_id")

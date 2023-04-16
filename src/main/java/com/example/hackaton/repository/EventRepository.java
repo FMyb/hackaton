@@ -8,13 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Yaroslav Ilin
  */
 @Repository
-public interface EventRepository extends JpaRepository<Event, UUID> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
 	@Query("FROM event e WHERE e.finishTimestamp >= :tsBefore AND e.finishTimestamp <= :tsAfter")
 	List<Event> getStatesForArchive(@Param("tsBefore") long tsBefore, @Param("tsAfter") long tsAfter);

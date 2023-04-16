@@ -3,8 +3,6 @@ package com.example.hackaton.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.UUID;
-
 /**
  * @author Yaroslav Ilin
  */
@@ -13,9 +11,9 @@ import java.util.UUID;
 @Getter
 public class EventDto {
 
-    private UUID eventId;
+    private long eventId;
 
-    private UUID methodId;
+    private long methodId;
 
     private String fullName;
 

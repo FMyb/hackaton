@@ -15,9 +15,9 @@ import java.util.function.Function;
 public interface StatisticService {
     List<TimeStatistic> getTimeStatistics(long tsBefore, long tsAfter, Function<ArchiveState, Double> avg, Integer limit);
 
-    List<Point> getDependencyData(long id, String type, long tsBefore, long tsAfter);
+    List<Point> getDependencyData(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter);
 
-    List<EventDto> getStac(long id, String type, long tsBefore, long tsAfter);
+    List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter);
 
     void saveStats(List<EventInput> input);
 

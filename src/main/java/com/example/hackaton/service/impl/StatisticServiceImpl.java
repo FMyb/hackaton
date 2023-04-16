@@ -11,6 +11,7 @@ import com.example.hackaton.repository.ArchiveStateRepository;
 import com.example.hackaton.repository.EventRepository;
 import com.example.hackaton.repository.MethodRepository;
 import com.example.hackaton.service.StatisticService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public List<TimeStatistic> getTimeStatistics(long tsBefore, long tsAfter, Function<ArchiveState, Double> avg, Integer limit) {
         List<ArchiveState> archiveStatesBefore = archiveStateRepository.findAllByTimestamp(tsBefore);
-        Map<UUID, ArchiveState> archiveStatesAfter = archiveStateRepository.findAllByTimestamp(tsAfter).stream()
+        Map<Long, ArchiveState> archiveStatesAfter = archiveStateRepository.findAllByTimestamp(tsAfter).stream()
                 .collect(Collectors.toMap(x -> x.getMethod().getMethodId(), x -> x));
         List<TimeStatistic> result = new ArrayList<>();
         for (var before : archiveStatesBefore) {
@@ -62,31 +63,48 @@ public class StatisticServiceImpl implements StatisticService {
             result.add(timeStatistic);
         }
         result.sort((x, y) -> y.getPercent().compareTo(x.getPercent()));
-        return result;
+        return result.subList(0, Math.min(result.size(), limit));
     }
 
     @Override
-    public List<Point> getDependencyData(long id, String type, long tsBefore, long tsAfter) {
+    public List<Point> getDependencyData(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter) {
+        return archiveStateRepository.findAllByMethod_MethodIdAndTimestampGreaterThanEqualAndTimestampLessThanEqualOrderByTimestamp(
+                id,
+                tsBefore,
+                tsAfter
+        ).stream().map(it -> new Point(it.getTimestamp(), avg.apply(it))).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDto> getStac(long id, Function<ArchiveState, Double> avg, long tsBefore, long tsAfter) {
         return null;
     }
 
     @Override
-    public List<EventDto> getStac(long id, String type, long tsBefore, long tsAfter) {
-        return null;
-    }
-
-    @Override
+    @Transactional
     public void saveStats(List<EventInput> inputs) {
         for (EventInput input : inputs) {
             Method method = methodRepository.findMethodByFullName(input.getFullMethodName());
             if (method == null) {
-                methodRepository.save(new Method(UUID.randomUUID(), input.getFullMethodName(), input.getMethodName()));
+                method = methodRepository.save(Method.builder()
+                        .fullName(input.getFullMethodName())
+                        .name(input.getMethodName())
+                        .build()
+                );
             }
-            eventStateRepository.save(new Event(UUID.randomUUID(), method, input.getStartTimestamp(), input.getFinishTimestamp(), input.getBytesCount(), input.getStacktrace()));
+            eventStateRepository.save(Event.builder()
+                    .method(method)
+                    .startTimestamp(input.getStartTimestamp())
+                    .finishTimestamp(input.getFinishTimestamp())
+                    .bytesCount(input.getBytesCount())
+                    .stacktrace(input.getStacktrace())
+                    .build()
+            );
         }
     }
 
     @Override
+    @Transactional
     public void archiveData(long tsBefore, long tsAfter) {
         List<Event> events = eventStateRepository.getStatesForArchive(tsBefore, tsAfter);
 
@@ -115,7 +133,12 @@ public class StatisticServiceImpl implements StatisticService {
                                     t -> t - (t % fifteenMinutes)
                             ).findAny().orElse(0);
 
-                    return new ArchiveState(UUID.randomUUID(), method, avgByteCount, avgTime, timestamp);
+                    return ArchiveState.builder()
+                            .method(method)
+                            .avgByteCount(avgByteCount)
+                            .avgTime(avgTime)
+                            .timestamp(timestamp)
+                            .build();
                 })
                 .toList();
 

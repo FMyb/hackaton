@@ -47,6 +47,9 @@ public class StatisticsController {
         if (typeMapper == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "bad type");
         }
+        if (limit == null) {
+            limit = 5;
+        }
         return statisticService.getTimeStatistics(tsBefore, tsAfter, typeMapper, limit);
     }
 
@@ -57,7 +60,15 @@ public class StatisticsController {
             @RequestParam long tsBefore,
             @RequestParam long tsAfter
     ) {
-        return statisticService.getDependencyData(id, type, tsBefore, tsAfter);
+        Function<ArchiveState, Double> typeMapper = switch (type) {
+            case "BYTE_CNT" -> ArchiveState::getAvgByteCount;
+            case "EXEC_TIME" -> ArchiveState::getAvgTime;
+            default -> null;
+        };
+        if (typeMapper == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "bad type");
+        }
+        return statisticService.getDependencyData(id, typeMapper, tsBefore, tsAfter);
     }
 
 
@@ -68,7 +79,15 @@ public class StatisticsController {
             @RequestParam long tsBefore,
             @RequestParam long tsAfter
     ) {
-        return statisticService.getStac(id, type, tsBefore, tsAfter);
+        Function<ArchiveState, Double> typeMapper = switch (type) {
+            case "BYTE_CNT" -> ArchiveState::getAvgByteCount;
+            case "EXEC_TIME" -> ArchiveState::getAvgTime;
+            default -> null;
+        };
+        if (typeMapper == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "bad type");
+        }
+        return statisticService.getStac(id, typeMapper, tsBefore, tsAfter);
     }
 
 
