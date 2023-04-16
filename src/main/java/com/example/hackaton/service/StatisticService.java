@@ -18,5 +18,4 @@ public interface StatisticService {
 
     List<EventDto> getStac(long id, String type, long tsBefore, long tsAfter);
 
-    boolean archiveData(long tsBefore, long tsAfter);
 }

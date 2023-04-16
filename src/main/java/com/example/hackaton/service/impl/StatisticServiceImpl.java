@@ -5,6 +5,7 @@ import com.example.hackaton.dto.Point;
 import com.example.hackaton.dto.TimeStatistic;
 import com.example.hackaton.model.ArchiveState;
 import com.example.hackaton.model.Event;
+import com.example.hackaton.model.Method;
 import com.example.hackaton.repository.ArchiveStateRepository;
 import com.example.hackaton.repository.EventRepository;
 import com.example.hackaton.service.StatisticService;
@@ -21,15 +22,9 @@ import java.util.stream.Collectors;
 public class StatisticServiceImpl implements StatisticService {
     private final ArchiveStateRepository archiveStateRepository;
 
-    private final EventRepository eventStateRepository;
-
-
     public StatisticServiceImpl(
-            ArchiveStateRepository archiveStateRepository,
-            EventRepository eventStateRepository
-    ) {
+            ArchiveStateRepository archiveStateRepository) {
         this.archiveStateRepository = archiveStateRepository;
-        this.eventStateRepository = eventStateRepository;
     }
 
     @Override
@@ -71,10 +66,4 @@ public class StatisticServiceImpl implements StatisticService {
         return null;
     }
 
-    @Override
-    public boolean archiveData(long tsBefore, long tsAfter) {
-        List<Event> events = eventStateRepository.findAllBetween(tsBefore, tsAfter);
-
-        return true;
-    }
 }

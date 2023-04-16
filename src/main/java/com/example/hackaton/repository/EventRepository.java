@@ -16,7 +16,6 @@ import java.util.UUID;
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
-	@Query("from event where timestamp = (select timestamp from event where timestamp >= :tsBefore and  timestamp <= :tsAfter)")
-	List<Event> findAllBetween(@Param("tsBefore") long tsBefore,@Param("tsAfter") long tsAfter);
-
+	@Query("FROM event e JOIN e.method m WHERE e.finishTimestamp >= :tsBefore AND e.finishTimestamp <= :tsAfter GROUP BY m")
+	List<Event> getStatesForArchive(@Param("tsBefore") long tsBefore, @Param("tsAfter") long tsAfter);
 }
